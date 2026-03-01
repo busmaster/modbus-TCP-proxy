@@ -5,7 +5,7 @@ After=network.target
  
 [Service]
 Type=simple
-ExecStart=/home/klaus/modbus-proxy/modbus-proxy 5020 10.0.0.212 502
+ExecStart=/home/klaus/git/modbus-TCP-proxy/modbus-proxy 5020 10.0.0.212 502
 StandardOutput=null
 KillSignal=SIGINT
  
