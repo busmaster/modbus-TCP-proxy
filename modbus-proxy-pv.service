@@ -1,0 +1,13 @@
+[Unit]
+Description=Modbus Proxy for PV Storage
+Wants=network.target
+After=network.target
+ 
+[Service]
+Type=simple
+ExecStart=/home/klaus/modbus-proxy/modbus-proxy 5020 10.0.0.212 502
+StandardOutput=null
+KillSignal=SIGINT
+ 
+[Install]
+WantedBy=multi-user.target
