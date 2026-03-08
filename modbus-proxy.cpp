@@ -12,8 +12,8 @@
 int main(int argc, char *argv[]) {
 
     int listen_port;
-    char *target_ip;
-    int target_port;
+    char *server_ip;
+    int server_port;
     int listen_fd;
     int modbus_fd;
     int client_fd;
@@ -25,13 +25,13 @@ int main(int argc, char *argv[]) {
     char buffer[BUFFER_SIZE];
 
     if (argc < 4) {
-        fprintf(stderr, "usage: %s <listen_port> <target_ip> <target_port>\n", argv[0]);
+        fprintf(stderr, "usage: %s <listen_port> <server_ip> <server_port>\n", argv[0]);
         return 1;
     }
 
     listen_port = atoi(argv[1]);
-    target_ip = argv[2];
-    target_port = atoi(argv[3]);
+    server_ip = argv[2];
+    server_port = atoi(argv[3]);
 
     /* listen socket */
     listen_fd = socket(AF_INET, SOCK_STREAM, 0);
@@ -53,9 +53,9 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(502);
-    if (inet_pton(AF_INET, target_ip, &addr.sin_addr) <= 0) {
-        fprintf(stderr, "invalid address %s", target_ip);
+    addr.sin_port = htons(server_port);
+    if (inet_pton(AF_INET, server_ip, &addr.sin_addr) <= 0) {
+        fprintf(stderr, "invalid address %s", server_ip);
         return 1;
     }
     if (setsockopt(modbus_fd, IPPROTO_TCP, TCP_NODELAY, &opt, sizeof(opt)) == -1) {
@@ -67,14 +67,14 @@ int main(int argc, char *argv[]) {
         return 1;
     }
     if (connect(modbus_fd, (struct sockaddr *)&addr, sizeof(addr)) < 0) {
-        fprintf(stderr, "connection to %s:%d failed", target_ip, target_port);
+        fprintf(stderr, "connection to %s:%d failed", server_ip, server_port);
         return 1;
     }
 
     FD_ZERO(&saved_fds);
     FD_SET(listen_fd, &saved_fds);
     max_fd = listen_fd;
-    printf("modbus proxy active: local:%d -> remote:%s:%d\n", listen_port, target_ip, target_port);
+    printf("modbus proxy active: local:%d -> remote:%s:%d\n", listen_port, server_ip, server_port);
 
     while (1) {
         working_fds = saved_fds;
